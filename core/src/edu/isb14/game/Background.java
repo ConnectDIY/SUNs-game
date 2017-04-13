@@ -5,12 +5,32 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class Background {
-    private Texture texture;
+    private int position1;
+    private int position2;
+    private final float speed = 3f;
+    private Texture texture1;
+    private Texture texture2;
+    
     public Background(String strBackTexture){
-        texture = new Texture(Gdx.files.internal(strBackTexture));
+        texture1 = new Texture(Gdx.files.internal(strBackTexture));
+        position1 = 0;
+        
+        texture2 = new Texture(Gdx.files.internal(strBackTexture)); //вторая картинка, чтобы был "непрерывный паровозик"
+        position2 = 1280;       
     }
 
+    public void update(){ //движение картинки
+        position1 -= speed;
+        if(position1 < -1280)
+            position1 = 1265; // не 1280, ибо появляется чёрная вертикальная полоса
+        
+        position2 -= speed;
+        if(position2<-1280)
+            position2 = 1265;
+    }
+    
     public void render(SpriteBatch batch){
-        batch.draw(texture, 0, 0, SunsGame.CONFIG_WIDTH, SunsGame.CONFIG_HEIGHT);
+        batch.draw(texture1, position1, 0, SunsGame.CONFIG_WIDTH, SunsGame.CONFIG_HEIGHT);
+        batch.draw(texture2, position2, 0, SunsGame.CONFIG_WIDTH, SunsGame.CONFIG_HEIGHT);
     }
 }

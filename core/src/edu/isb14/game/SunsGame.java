@@ -26,8 +26,9 @@ public class SunsGame extends ApplicationAdapter {
 	// Анимация человечка
 	private AnimationGame walkAnimation;
 	// ---
+        private MediumEnemy badGuy;
 
-	private Hero player2;
+	private Hero player1;
 	private Hero player2;
 
 	@Override
@@ -36,6 +37,7 @@ public class SunsGame extends ApplicationAdapter {
 		camera = new OrthographicCamera();
 //		camera1.setToOrtho(false, 800, 480);
 		background = new Background("back.png");
+                badGuy = new MediumEnemy("enemy.png");
 
 		camera = new PerspectiveCamera();
 		viewport = new FitViewport(CONFIG_WIDTH, CONFIG_HEIGHT, camera);
@@ -55,9 +57,11 @@ public class SunsGame extends ApplicationAdapter {
 		batch.begin();
 
 		background.render(batch);	// Отрисовка фона
-		walkAnimation.render(batch);	// Отрисовка бегущего человечка
+		//walkAnimation.render(batch);	// Отрисовка бегущего человечка
 		player1.render(batch);		// Отрисовка игрока
 		player2.render(batch);		// Отрисовка игрока
+                badGuy.render(batch);
+                badGuy.bulletRender(batch);
 
 		batch.end();
 	}
@@ -67,7 +71,8 @@ public class SunsGame extends ApplicationAdapter {
 	}
 
 	private void update(){
-
+            background.update();
+            badGuy.update();
 	}
 	
 	@Override
