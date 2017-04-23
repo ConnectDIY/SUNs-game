@@ -8,7 +8,10 @@ package edu.isb14.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -23,22 +26,31 @@ public class MediumEnemy extends Enemy{
         this.hp = 3;
         this.attack = 3;
         this.reward = 10;
-        this.speed = 5.0f;
+        this.speed = 2.0f;
         this.fireCounter = 0;
-        this.fireRate = 5;
+        this.fireRate = 15;
         
         this.texture = new Texture(Gdx.files.internal(sprite));
         this.position = new Vector2(SunsGame.CONFIG_WIDTH, SunsGame.CONFIG_HEIGHT/2);
-        
+        this.hitBox = new Rectangle(position.x, position.y, texture.getWidth(), texture.getHeight());
         
     }
     
+//    public void recreate(){
+//        
+//        this.active = true;
+//        this.position.x = SunsGame.CONFIG_WIDTH;
+//        this.position.y = SunsGame.CONFIG_HEIGHT/2;
+//        this.hitBox.x = position.x;
+//    }
+    
     @Override
     public void update(){
-        if (active)
+        if (this.isActive()){
             position.x -= speed;
-        if (position.x < -texture.getWidth())
-            active = false;
+            hitBox.x -= speed;
+        }
+
          this.fireCounter++;                                                  // мы увеличиваем какой-то счетчик
         if (this.fireCounter > this.fireRate){                                     // если этот счётчик стал больше чем
             fireCounter = 0;                                            // счётчик сбрасываем
@@ -47,6 +59,8 @@ public class MediumEnemy extends Enemy{
                     bulletEmitter.bullets[i].setup(position.x + 55,position.y + 16);  // мы её создаём
                     break;                                              // и перестаем искать ещё какие то пули
                 }
+                if (bulletEmitter.bullets[i].getPosition().x<0)
+                    bulletEmitter.bullets[i].destroy();
             }
         }
     }

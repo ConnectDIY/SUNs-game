@@ -21,12 +21,12 @@ public class Background {
 
     public void update(){ //движение картинки
         position1 -= speed;
-        if(position1 < -1280)
-            position1 = 1265; // не 1280, ибо появляется чёрная вертикальная полоса
+        if(position1 < -SunsGame.CONFIG_WIDTH)
+            position1 = SunsGame.CONFIG_WIDTH; // не 1280, ибо появляется чёрная вертикальная полоса
         
         position2 -= speed;
-        if(position2<-1280)
-            position2 = 1265;
+        if(position2<-SunsGame.CONFIG_WIDTH)
+            position2 = SunsGame.CONFIG_WIDTH;
     }
     
     public void render(SpriteBatch batch){

@@ -10,6 +10,8 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -32,6 +34,19 @@ public abstract class Enemy {
         return active;
     }
     
+    public void destroy(){
+        this.active = false;
+       // this.texture.dispose();
+    }
+    
+    //public abstract void recreate(); //надо обдумать использование
+    
+    public void getDamage(int dmg){
+        this.hp -= dmg;
+        if (this.hp == 0)
+            this.destroy();
+    }
+    
     public Rectangle getHitBox(){
         return hitBox;
     }
@@ -39,8 +54,7 @@ public abstract class Enemy {
     public abstract void update();
     
     public void render(SpriteBatch batch){
-        batch.draw(texture, position.x, position.y);
-        
+        batch.draw(texture, position.x, position.y);        
     }
     
 }

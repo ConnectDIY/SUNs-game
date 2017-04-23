@@ -59,10 +59,11 @@ public class SunsGame extends ApplicationAdapter {
 		background.render(batch);	// Отрисовка фона
 		//walkAnimation.render(batch);	// Отрисовка бегущего человечка
 		player1.render(batch);		// Отрисовка игрока
-		player2.render(batch);		// Отрисовка игрока
-                badGuy.render(batch);
-                badGuy.bulletRender(batch);
-
+		player2.render(batch);		// Отрисовка игрока    
+                if (badGuy.isActive()){
+                    badGuy.render(batch);
+                    badGuy.bulletRender(batch);
+                }
 		batch.end();
 	}
 
@@ -71,8 +72,21 @@ public class SunsGame extends ApplicationAdapter {
 	}
 
 	private void update(){
+//            if (badGuy.isActive() == false){
+//                badGuy.render(batch);
+//                badGuy.bulletRender(batch);
+//            }
             background.update();
-            badGuy.update();
+            if (badGuy.isActive())
+                badGuy.update();
+            
+            for(int i = 0; i < player1.bulletEmitter.getBulletsCount(); i++){
+                if (player1.bulletEmitter.bullets[i].isActive())
+                    if(badGuy.getHitBox().contains(player1.bulletEmitter.bullets[i].getPosition()) ){
+                        badGuy.getDamage(1); //надо бы получить доступ к полю урона игрока
+                        player1.bulletEmitter.bullets[i].destroy();
+                    }
+            }
 	}
 	
 	@Override

@@ -67,7 +67,7 @@ public class Hero {
             fireCounter++;                                                  // мы увеличиваем какой-то счетчик
             if (fireCounter > fireRate){                                     // если этот счётчик стал больше чем
                 fireCounter = 0;                                            // счётчик сбрасываем
-                for (int i = 0; i < bulletEmitter.bullets.length; i++) {        // начинаем ходить по массиву пуль, котор лежит в MyGdxGame
+                for (int i = 0; i < bulletEmitter.bullets.length; i++) {        // начинаем ходить по массиву пуль
                     if(!bulletEmitter.bullets[i].isActive()){                    // как только находим в этом массиве не активную пулю,
                         bulletEmitter.bullets[i].setup(position.x + 55,position.y + 16);  // мы её создаём
                         break;                                              // и перестаем искать ещё какие то пули
