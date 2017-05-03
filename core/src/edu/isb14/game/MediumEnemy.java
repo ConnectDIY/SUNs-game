@@ -31,18 +31,20 @@ public class MediumEnemy extends Enemy{
         this.fireRate = 15;
         
         this.texture = new Texture(Gdx.files.internal(sprite));
-        this.position = new Vector2(SunsGame.CONFIG_WIDTH, SunsGame.CONFIG_HEIGHT/2);
+        this.position = new Vector2(SunsGame.CONFIG_WIDTH, (float) (Math.random()*SunsGame.CONFIG_HEIGHT - texture.getHeight()));
         this.hitBox = new Rectangle(position.x, position.y, texture.getWidth(), texture.getHeight());
         
     }
     
-//    public void recreate(){
-//        
-//        this.active = true;
-//        this.position.x = SunsGame.CONFIG_WIDTH;
-//        this.position.y = SunsGame.CONFIG_HEIGHT/2;
-//        this.hitBox.x = position.x;
-//    }
+    public void recreate(){
+        
+        this.active = true;
+        this.hp = 3;
+        this.position.x = SunsGame.CONFIG_WIDTH;
+        this.position.y = (float) (Math.random()*(SunsGame.CONFIG_HEIGHT - 1.5*texture.getHeight()) + texture.getHeight()/2 );
+        this.hitBox.x = position.x;
+        this.hitBox.y = position.y;
+    }
     
     @Override
     public void update(){
@@ -51,7 +53,10 @@ public class MediumEnemy extends Enemy{
             hitBox.x -= speed;
         }
 
-         this.fireCounter++;                                                  // мы увеличиваем какой-то счетчик
+        if ( position.x == -this.texture.getWidth() )
+            recreate();
+        
+        this.fireCounter++;                                                  // мы увеличиваем какой-то счетчик
         if (this.fireCounter > this.fireRate){                                     // если этот счётчик стал больше чем
             fireCounter = 0;                                            // счётчик сбрасываем
             for (int i = 0; i < bulletEmitter.bullets.length; i++) {        // начинаем ходить по массиву пуль, котор лежит в MyGdxGame

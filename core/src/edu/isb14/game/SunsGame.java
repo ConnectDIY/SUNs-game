@@ -72,10 +72,7 @@ public class SunsGame extends ApplicationAdapter {
 	}
 
 	private void update(){
-//            if (badGuy.isActive() == false){
-//                badGuy.render(batch);
-//                badGuy.bulletRender(batch);
-//            }
+
             background.update();
             if (badGuy.isActive())
                 badGuy.update();
@@ -83,7 +80,7 @@ public class SunsGame extends ApplicationAdapter {
             for(int i = 0; i < player1.bulletEmitter.getBulletsCount(); i++){
                 if (player1.bulletEmitter.bullets[i].isActive())
                     if(badGuy.getHitBox().contains(player1.bulletEmitter.bullets[i].getPosition()) ){
-                        badGuy.getDamage(1); //надо бы получить доступ к полю урона игрока
+                        badGuy.getDamage(player1.attack); //надо бы получить доступ к полю урона игрока
                         player1.bulletEmitter.bullets[i].destroy();
                     }
             }

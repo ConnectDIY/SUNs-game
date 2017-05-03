@@ -36,10 +36,10 @@ public abstract class Enemy {
     
     public void destroy(){
         this.active = false;
-       // this.texture.dispose();
+        this.recreate();
     }
     
-    //public abstract void recreate(); //надо обдумать использование
+    public abstract void recreate(); //надо обдумать использование
     
     public void getDamage(int dmg){
         this.hp -= dmg;
