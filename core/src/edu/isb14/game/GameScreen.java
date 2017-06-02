@@ -6,8 +6,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
@@ -20,18 +19,17 @@ public class GameScreen extends ApplicationAdapter implements Screen{
 	// Настройка отображения под разными экранами
 	private Viewport viewport;
 	private Camera camera;
-	// Анимация человечка
-//	private AnimationGame walkAnimation;
 	// Противники
         private MediumEnemy badGuy;
-        private LightEnemy lEn;
-        private HeavyEnemy heavy;
+        private LightEnemy[] lightEn;
+        private final int LIGHT_ENEMY_COUNTS = 5;
+        private HeavyEnemy heavyEn;
 	// Игроки
 	private Hero player1;
 	private Hero player2;
 	boolean onePlayers;
 
-	private BitmapFont pauseMenu;
+    private BitmapFont pauseMenu;
 	private String pauseMenuItems[];
 	private int currentPauseItem;
 
@@ -41,14 +39,14 @@ public class GameScreen extends ApplicationAdapter implements Screen{
 		camera = new OrthographicCamera();
 		background = new Background("bckgrnd.png", this.game);
                 badGuy = new MediumEnemy("enemy_ufo_black.png");
-                lEn = new LightEnemy("ship2_60x60.png");
-                heavy = new HeavyEnemy("enemy.png");
+        lightEn = new LightEnemy[LIGHT_ENEMY_COUNTS];
+        for (int i = 0; i < LIGHT_ENEMY_COUNTS; i++) {
+            lightEn[i] = new LightEnemy("ship2_60x60.png");
+        }
 
-		//camera = new PerspectiveCamera();
+//                heavyEn = new HeavyEnemy("enemy.png");
 
 		viewport = new FitViewport(SunsGame.CONFIG_WIDTH, SunsGame.CONFIG_HEIGHT, camera);	// отображение экрана с чёрными линииями по краям и сохранение пропорций
-
-//		walkAnimation = new AnimationGame("sprite-animation4.png", 5, 6, 0.03f, true);
 
 		onePlayers = amountPlayer;
 		player1 = new Hero(Hero.Player.P1);
@@ -145,49 +143,33 @@ public class GameScreen extends ApplicationAdapter implements Screen{
 	public void draw(){
 		update();
 		game.batch.begin();
-
 		game.updateTime(Gdx.graphics.getDeltaTime());
-
 		background.render(game.batch);	// Отрисовка фона
-//		walkAnimation.render(game.batch);	// Отрисовка бегущего человечка
 
 		player1.render(game.batch);		// Отрисовка игрока
+
 		if (!onePlayers){
 			player2.render(game.batch);		// Отрисовка игрока}
 		}
 
-		if (badGuy.isActive()){
-			badGuy.render(game.batch);
-			badGuy.bulletRender(game.batch);
-		}
-                
-                if (lEn.isActive()){
-                    lEn.render(game.batch);
-                    lEn.bulletRender(game.batch);
-                }
+//		if (badGuy.isActive()){
+//			badGuy.render(game.batch);
+//			badGuy.bulletRender(game.batch);
+//		}
 
-                if (heavy.isActive()){
-                    heavy.render(game.batch);
-                    heavy.bulletRender(game.batch);
-                }
+        lvlTiming(); // метод в котором описаны тайминги уровня
+
+        for (int i = 0; i < LIGHT_ENEMY_COUNTS; i++) {
+            if (lightEn[i].isActive()){
+                lightEn[i].render(game.batch);
+            }
+        }
 
         background.renderStatusBar(game.batch, onePlayers);
 		game.batch.end();
 	}
 
-	@Override
-	public void show() {
 
-	}
-
-	public void resize(int width, int height) {
-		viewport.update(width, height);
-	}
-
-	@Override
-	public void hide() {
-
-	}
 
 	private void update(){
 		Gdx.gl.glClearColor(0, 0, 0, 1);	// Цвет фона
@@ -195,50 +177,60 @@ public class GameScreen extends ApplicationAdapter implements Screen{
 
             if (badGuy.isActive())
                 badGuy.update();
-            
-            if (lEn.isActive())
-                lEn.update();
+        for (int i = 0; i < LIGHT_ENEMY_COUNTS; i++) {
+            if (lightEn[i].isActive())
+                lightEn[i].update();
+        }
 
-            if (heavy.isActive())
-                heavy.update();
 
+
+//            if (heavyEn.isActive())
+//                heavyEn.update();
+        // ------------------------------------------------------------------------------------------------------------
+        // Столкновения пуль первого игрока и врагов
             for(int i = 0; i < player1.bulletEmitter.getBulletsCount(); i++){
                 if (player1.bulletEmitter.bullets[i].isActive()){
                     if(badGuy.getHitBox().contains(player1.bulletEmitter.bullets[i].getPosition()) ){
-                        badGuy.getDamage(player1.getAttack()); //надо бы получить доступ к полю урона игрока
+                        badGuy.getDamage(player1.getAttack());
                         player1.bulletEmitter.bullets[i].destroy();
                     }
-                
-                    if(lEn.getHitBox().contains(player1.bulletEmitter.bullets[i].getPosition())){
-                        lEn.getDamage(player1.getAttack()); //надо бы получить доступ к полю урона игрока
-                        player1.bulletEmitter.bullets[i].destroy();
+                    for (int j = 0; j < LIGHT_ENEMY_COUNTS; j++) {
+                        if(lightEn[j].getHitBox().contains(player1.bulletEmitter.bullets[i].getPosition())){
+                            lightEn[j].getDamage(player1.getAttack()); //надо бы получить доступ к полю урона игрока
+                            player1.bulletEmitter.bullets[i].destroy();
+                        }
                     }
 
-                    if(heavy.getHitBox().contains(player1.bulletEmitter.bullets[i].getPosition()) ){
-                        heavy.getDamage(player1.getAttack()); //надо бы получить доступ к полю урона игрока
-                        player1.bulletEmitter.bullets[i].destroy();
-                    }
+
+//                    if(heavyEn.getHitBox().contains(player1.bulletEmitter.bullets[i].getPosition()) ){
+//                        heavyEn.getDamage(player1.getAttack()); //надо бы получить доступ к полю урона игрока
+//                        player1.bulletEmitter.bullets[i].destroy();
+//                    }
                 }
-                
+
+                // Столкновения пуль второго игрока и врагов
                 if(!onePlayers)
                 if (player2.bulletEmitter.bullets[i].isActive()){
                     if(badGuy.getHitBox().contains(player2.bulletEmitter.bullets[i].getPosition()) ){
                         badGuy.getDamage(player2.getAttack()); //надо бы получить доступ к полю урона игрока
                         player2.bulletEmitter.bullets[i].destroy();
                     }
-                
-                    if(lEn.getHitBox().contains(player2.bulletEmitter.bullets[i].getPosition())){
-                        lEn.getDamage(player2.getAttack()); //надо бы получить доступ к полю урона игрока
-                        player2.bulletEmitter.bullets[i].destroy();
+                    for (int j = 0; j < LIGHT_ENEMY_COUNTS; j++) {
+                        if(lightEn[j].getHitBox().contains(player2.bulletEmitter.bullets[i].getPosition())){
+                            lightEn[j].getDamage(player2.getAttack()); //надо бы получить доступ к полю урона игрока
+                            player2.bulletEmitter.bullets[i].destroy();
+                        }
                     }
 
-                    if(heavy.getHitBox().contains(player2.bulletEmitter.bullets[i].getPosition()) ){
-                        heavy.getDamage(player2.getAttack()); //надо бы получить доступ к полю урона игрока
-                        player2.bulletEmitter.bullets[i].destroy();
-                    }
+//
+//                    if(heavyEn.getHitBox().contains(player2.bulletEmitter.bullets[i].getPosition()) ){
+//                        heavyEn.getDamage(player2.getAttack()); //надо бы получить доступ к полю урона игрока
+//                        player2.bulletEmitter.bullets[i].destroy();
+//                    }
                 }
             }
-            
+        // ------------------------------------------------------------------------------------------------------------
+        // Столкновения пуль ВРАГОВ и игрока1
             for(int i = 0; i < badGuy.bulletEmitter.getBulletsCount(); i++){
                 if (badGuy.bulletEmitter.bullets[i].isActive()){
                     if(player1.getHitBox().contains(badGuy.bulletEmitter.bullets[i].getPosition())){
@@ -246,21 +238,23 @@ public class GameScreen extends ApplicationAdapter implements Screen{
                         badGuy.bulletEmitter.bullets[i].destroy();
                     }
                 }
-                
-                if (lEn.bulletEmitter.bullets[i].isActive()){
-                    if(player1.getHitBox().contains(lEn.bulletEmitter.bullets[i].getPosition())){
-                        player1.getDamage(lEn.attack);
-                        lEn.bulletEmitter.bullets[i].destroy();
+                for (int j = 0; j < LIGHT_ENEMY_COUNTS; j++) {
+                    if ( lightEn[j].isActive() && lightEn[j].bulletEmitter.bullets[i].isActive()){
+                        if(player1.getHitBox().contains(lightEn[j].bulletEmitter.bullets[i].getPosition())){
+                            player1.getDamage(lightEn[j].attack);
+                            lightEn[j].bulletEmitter.bullets[i].destroy();
+                        }
                     }
                 }
+
                 
-                if (heavy.bulletEmitter.bullets[i].isActive()){
-                    if(player1.getHitBox().contains(heavy.bulletEmitter.bullets[i].getPosition())){
-                        player1.getDamage(heavy.attack);
-                        heavy.bulletEmitter.bullets[i].destroy();
-                    }
-                }
-                
+//                if (heavyEn.bulletEmitter.bullets[i].isActive()){
+//                    if(player1.getHitBox().contains(heavyEn.bulletEmitter.bullets[i].getPosition())){
+//                        player1.getDamage(heavyEn.attack);
+//                        heavyEn.bulletEmitter.bullets[i].destroy();
+//                    }
+//                }
+                // Столкновения пуль ВРАГОВ и игрока2
                 if(!onePlayers){
                 if (badGuy.bulletEmitter.bullets[i].isActive()){
                     if(player2.getHitBox().contains(badGuy.bulletEmitter.bullets[i].getPosition())){
@@ -268,54 +262,69 @@ public class GameScreen extends ApplicationAdapter implements Screen{
                         badGuy.bulletEmitter.bullets[i].destroy();
                     }
                 }
-                
-                if (lEn.bulletEmitter.bullets[i].isActive()){
-                    if(player2.getHitBox().contains(lEn.bulletEmitter.bullets[i].getPosition())){
-                        player2.getDamage(lEn.attack);
-                        lEn.bulletEmitter.bullets[i].destroy();
-                    }
-                }
-                
-                if (heavy.bulletEmitter.bullets[i].isActive()){
-                    if(player2.getHitBox().contains(heavy.bulletEmitter.bullets[i].getPosition())){
-                        player2.getDamage(heavy.attack);
-                        heavy.bulletEmitter.bullets[i].destroy();
+                    for (int j = 0; j < LIGHT_ENEMY_COUNTS; j++) {
+                        if (lightEn[j].bulletEmitter.bullets[i].isActive()){
+                            if(player2.getHitBox().contains(lightEn[j].bulletEmitter.bullets[i].getPosition())){
+                                player2.getDamage(lightEn[j].attack);
+                                lightEn[j].bulletEmitter.bullets[i].destroy();
+                            }
                         }
                     }
+
+                
+//                if (heavyEn.bulletEmitter.bullets[i].isActive()){
+//                    if(player2.getHitBox().contains(heavyEn.bulletEmitter.bullets[i].getPosition())){
+//                        player2.getDamage(heavyEn.attack);
+//                        heavyEn.bulletEmitter.bullets[i].destroy();
+//                        }
+//                    }
                 }
             }
-            
-            if ( badGuy.getHitBox().contains(player1.getHitBox())){
+        // ------------------------------------------------------------------------------------------------------------
+        // Столкновения врагов и игроков
+            if ( badGuy.getHitBox().overlaps(player1.getHitBox())){
                 player1.getDamage(badGuy.hp);
                 badGuy.getDamage(player1.getHp());
             }
-            
-            if (player1.getHitBox().contains(lEn.position)){
-                player1.getDamage(lEn.hp);
-                lEn.getDamage(player1.getHp());
+        for (int i = 0; i < LIGHT_ENEMY_COUNTS; i++) {
+            if ( lightEn[i].isActive() && lightEn[i].getHitBox().overlaps( player1.getHitBox() )){      //!!!!!!!!!!!!!!1
+                player1.getDamage(lightEn[i].hp);
+                lightEn[i].getDamage(player1.getHp());
             }
+        }
+
             
-            if ( heavy.getHitBox().contains(player1.getHitBox())){
-                player1.getDamage(heavy.hp);
-                heavy.getDamage(player1.getHp());
-            }
+//            if ( heavyEn.getHitBox().contains(player1.getHitBox())){
+//                player1.getDamage(heavyEn.hp);
+//                heavyEn.getDamage(player1.getHp());
+//            }
             
             if(!onePlayers){
                 if ( badGuy.getHitBox().contains(player2.getHitBox())){
                     player2.getDamage(badGuy.hp);
                     badGuy.getDamage(player2.getHp());
                 }
-            
-                if ( player2.getHitBox().contains(lEn.position)){
-                    player2.getDamage(lEn.hp);
-                    lEn.getDamage(player2.getHp());
+                for (int i = 0; i < LIGHT_ENEMY_COUNTS; i++) {
+                    if ( player2.getHitBox().contains(lightEn[i].position)){
+                        player2.getDamage(lightEn[i].hp);
+                        lightEn[i].getDamage(player2.getHp());
+                    }
                 }
+
             
-                if ( heavy.getHitBox().contains(player2.getHitBox())){
-                    player2.getDamage(heavy.hp);
-                    heavy.getDamage(player2.getHp());
-                }
+//                if ( heavyEn.getHitBox().contains(player2.getHitBox())){
+//                    player2.getDamage(heavyEn.hp);
+//                    heavyEn.getDamage(player2.getHp());
+//                }
             }
+        // ------------------------------------------------------------------------------------------------------------
+//        // Dead enemy
+//        for (int i = 0; i < LIGHT_ENEMY_COUNTS; i++) {
+//            if (lightEn[i].getHp() <= 0){
+//                lightEn[i].dead();
+//            }
+//        }
+
 	}
 
 	public Hero getPlayer1(){
@@ -326,9 +335,34 @@ public class GameScreen extends ApplicationAdapter implements Screen{
         return player2;
     }
 
+    private void lvlTiming(){
+        if (SunsGame.minute == 0 && SunsGame.sec == 1){
+            for (int i = 0; i < LIGHT_ENEMY_COUNTS; i++) {
+                lightEn[i].setActive(true);
+            }
+
+        }
+
+    }
+
 	@Override
 	public void dispose () {
 		game.timeDispose();
 		pauseMenu.dispose();
 	}
+
+    @Override
+    public void show() {
+
+    }
+
+    public void resize(int width, int height) {
+        viewport.update(width, height);
+    }
+
+    @Override
+    public void hide() {
+
+    }
 }
+

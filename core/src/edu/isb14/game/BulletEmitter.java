@@ -3,6 +3,7 @@ package edu.isb14.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 
 // Класс описывающий общую работу пуль.
@@ -69,7 +70,7 @@ public class BulletEmitter {
     private Texture texBullet;
     private int bulletsCount = 50; // Кол-во пуль, такое чтобы массив пуль никогда не был полностью заполнен
     public Bullet[] bullets;
-
+    ShapeRenderer shapeRenderer;
     public BulletEmitter(String strTex, float bulletSpeed){
 
         if (texBullet == null){
@@ -80,7 +81,7 @@ public class BulletEmitter {
         for (int i = 0; i < bulletsCount; i++) {
             bullets[i] = new Bullet(bulletSpeed);
         }
-
+        shapeRenderer = new ShapeRenderer();
     }
 
     public BulletEmitter(String strTex, float bulletSpeed, boolean forwardShot){
@@ -93,7 +94,7 @@ public class BulletEmitter {
         for (int i = 0; i < bulletsCount; i++) {
             bullets[i] = new Bullet(bulletSpeed, forwardShot);
         }
-
+        shapeRenderer = new ShapeRenderer();
     }
 
     public void setBulletsCount(int bulletsCountChange){
@@ -106,11 +107,15 @@ public class BulletEmitter {
 
     public void renderLinerShot(SpriteBatch batch){
         updateLinerShot();
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         // drawing each bullet
         for (int i = 0; i < bulletsCount; i++) {
-            if (bullets[i].isActive())
+            if (bullets[i].isActive()) {
                 batch.draw(texBullet, bullets[i].position.x, bullets[i].position.y);
+                shapeRenderer.rect(bullets[i].position.x, bullets[i].position.y, texBullet.getWidth(), texBullet.getHeight());
+            }
         }
+        shapeRenderer.end();
     }
 
     public void updateLinerShot(){

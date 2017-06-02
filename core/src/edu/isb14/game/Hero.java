@@ -14,7 +14,7 @@ public class Hero {
     BulletEmitter bulletEmitter = new BulletEmitter("bullet20.png", 20.0f); // 1 - текстура, 2 - скорость пули
     private int hp = 100;
     private int score = 0;
-    private int attack = 1;
+    private int attack = 2;
     private float speed = 10.0f;
     private int fireRate = 5;       //
     private int fireCounter = 0;    // how many time press SPACE

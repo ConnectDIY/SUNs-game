@@ -29,14 +29,19 @@ public abstract class Enemy {
     protected Vector2 position;
     protected Rectangle hitBox;
     protected boolean active;
+
     
     public boolean isActive(){
         return active;
     }
+
+    public void setActive(boolean act){
+        active = act;
+    }
     
     public void destroy(){
         this.active = false;
-        this.recreate();
+//        this.recreate();
     }
     
     public abstract void recreate(); //надо обдумать использование
@@ -44,7 +49,8 @@ public abstract class Enemy {
     public void getDamage(int dmg){
         this.hp -= dmg;
         if (this.hp <= 0)
-            this.destroy();
+            this.dead();
+//        this.destroy();
     }
     
     public Rectangle getHitBox(){
@@ -52,9 +58,19 @@ public abstract class Enemy {
     }
         
     public abstract void update();
-    
-    public void render(SpriteBatch batch){
-        batch.draw(texture, position.x, position.y);        
+
+    public void dead(){
+        this.position.set(48, 48);
+        this.speed = 0;
+        this.fireCounter = 0;
+        this.hitBox.setPosition(position);
+        this.hitBox.setSize(0,0);
+//        this.fireRate = 1024;
     }
+    public int getHp(){
+        return hp;
+    }
+    
+    public abstract void render(SpriteBatch batch);
     
 }

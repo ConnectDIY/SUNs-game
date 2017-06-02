@@ -67,7 +67,13 @@ public class MediumEnemy extends Enemy{
             }
         }
     }
-    
+
+    @Override
+    public void render(SpriteBatch batch) {
+        batch.draw(texture, position.x, position.y);
+        bulletRender(batch);
+    }
+
     public void bulletRender(SpriteBatch batch){
         batch.draw(texture, position.x, position.y);
         bulletEmitter.renderLinerShot(batch);
