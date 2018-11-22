@@ -20,7 +20,7 @@ public class MediumEnemy extends Enemy{
     BulletEmitter bulletEmitter = new BulletEmitter("enemy_ufo_black_shot.png", 19f, false);
     
     public MediumEnemy(String sprite){
-        this.active = true;
+        this.active = false;
         this.hp = 5;
         this.attack = 3;
         this.reward = 10;

@@ -34,6 +34,10 @@ public abstract class Enemy {
         return active;
     }
     
+    public void setActive(){
+        this.active = true;
+    }
+    
     public void destroy(){
         this.active = false;
         this.recreate();

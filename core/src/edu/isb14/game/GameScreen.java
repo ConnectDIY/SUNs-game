@@ -190,8 +190,20 @@ public class GameScreen extends ApplicationAdapter implements Screen{
 	}
 
 	private void update(){
+            boolean mFl = false;
+            boolean hFl = false;
 		Gdx.gl.glClearColor(0, 0, 0, 1);	// Цвет фона
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);	// Очищает экран при каждом кадре.
+                
+            if (player1.getScore() > 25 && !mFl){
+                badGuy.setActive();
+                mFl = true;
+            }
+            
+            if (player1.getScore() > 50 && !hFl){
+                heavy.setActive();
+                hFl = true;
+            }
 
             if (badGuy.isActive())
                 badGuy.update();

@@ -20,7 +20,7 @@ public class HeavyEnemy extends Enemy{
     BulletEmitter bulletEmitter = new BulletEmitter("bullet20.png", 19f, false);
     
     public HeavyEnemy (String sprite){
-        this.active = true;
+        this.active = false;
         this.hp = 10;
         this.attack = 7;
         this.reward = 20;
